@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const { EXPIRE } = require('../../config/constants');
 const User = require('../../models/User');
 const Token = require('../../models/Token');
+const auth = require('../../middlewares/Authentication');
 
 const router = new express.Router();
 
@@ -76,13 +77,34 @@ router.post('/login', async (req, res) => {
     res.cookie('Authentication', token, {maxAge: new Date(EXPIRE)});
     res.status(200).send(responseData);
   }
-  catch(err){
+  catch(err) {
     const responseData = {
-      customMessage: err.customMessage || 'INTERNAL SERVER ERROR'
+      error: err.customMessage || 'INTERNAL SERVER ERROR'
     };
 
     res.status(err.statusCode || 500).send(responseData);
   }
+});
+
+router.post('/logout', auth , async (req, res) => {
+  try {
+    await Token.deleteOne({value: req.authData.token});
+    res.clearCookie('Authentication');
+
+    const response = {
+      message: 'Logged out Successfully'
+    }
+
+    res.status(200).send(response);
+  }
+  catch(err) {
+    const response = {
+      error:'INTERNAL SERVER ERROR'
+    }
+
+    res.status(500).send(response);
+  }
+  
 })
 
 module.exports = router;
