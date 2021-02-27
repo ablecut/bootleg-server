@@ -28,6 +28,7 @@ const auth = async (req, res, next) => {
     }
 
     res.clearCookie('Authentication');
+    res.clearCookie('username');
     res.status(401).send(response);
   }
 }

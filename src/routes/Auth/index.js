@@ -69,12 +69,10 @@ router.post('/login', async (req, res) => {
 
     const responseData = {
       message: 'Login Successfull',
-      data: {
-        username
-      }
     }
 
     res.cookie('Authentication', token, {maxAge: new Date(EXPIRE)});
+    res.cookie('username', username, {maxAge: new Date(EXPIRE)});
     res.status(200).send(responseData);
   }
   catch(err) {
@@ -90,6 +88,7 @@ router.post('/logout', auth , async (req, res) => {
   try {
     await Token.deleteOne({value: req.authData.token});
     res.clearCookie('Authentication');
+    res.clearCookie('username');
 
     const response = {
       message: 'Logged out Successfully'
