@@ -69,6 +69,7 @@ router.post('/login', async (req, res) => {
 
     const responseData = {
       message: 'Login Successfull',
+      username
     }
 
     res.cookie('Authentication', token, {maxAge: new Date(EXPIRE)});
