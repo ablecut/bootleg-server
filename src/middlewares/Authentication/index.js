@@ -23,6 +23,7 @@ const auth = async (req, res, next) => {
     next();
   }
   catch(err) {
+    console.log('Authentication Error',err);
     const response = {
       error: 'Not Authorized'
     }

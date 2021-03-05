@@ -72,7 +72,7 @@ router.post('/login', async (req, res) => {
       username
     }
 
-    res.cookie('Authentication', token, {maxAge: new Date(EXPIRE)});
+    res.cookie('Authentication', authToken, {maxAge: new Date(EXPIRE)});
     res.cookie('username', username, {maxAge: new Date(EXPIRE)});
     res.status(200).send(responseData);
   }
