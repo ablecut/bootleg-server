@@ -3,11 +3,13 @@ const cors = require('cors');
 
 require('./config/database');
 const Auth = require('./routes/Auth');
+const Search = require('./routes/Search');
 
 const app = express();
 
 app.use(express.json());
 app.use(Auth);
+app.use(Search);
 
 if (process.env.MODE === 'PROD') {
   app.use(cors());
