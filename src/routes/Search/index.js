@@ -14,7 +14,7 @@ const generateSearchResponse = (searchResult, searchQuery) => {
   const searchData = searchResult.currentPage.map((item) => {
     return {
       url: item.url,
-      thumbnail: item.thumbnails.high.url,
+      thumbnail: item.thumbnails.medium.url,
       title: item.title,
       channelName: item.channelTitle
     }
@@ -43,6 +43,7 @@ router.get('/search', auth ,async (req, res) => {
     if (!pageToken) {
       const searchResult = await searcher.search(searchQuery, {type:'video'});
       res.status(200).send(generateSearchResponse(searchResult, searchQuery));
+      return;
     }
 
     const searchResult = await searcher.search(searchQuery, {
