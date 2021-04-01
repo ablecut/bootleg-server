@@ -1,5 +1,6 @@
 const express = require('express');
 const { YTSearcher } = require('ytsearcher');
+const ytdl = require('ytdl-core');
 
 const auth = require('../../middlewares/Authentication');
 
@@ -9,15 +10,24 @@ const searcher = new YTSearcher({
   key: process.env.YT_API
 });
 
-const generateSearchResponse = (searchResult, searchQuery) => {
+const generateSearchResponse = async (searchResult, searchQuery) => {
 
-  const searchData = searchResult.currentPage.map((item) => {
-    return {
-      url: item.url,
-      thumbnail: item.thumbnails.medium.url,
-      title: item.title,
-      channelName: item.channelTitle
-    }
+  const promises = searchResult.currentPage.map((item) => {
+    return ytdl.getBasicInfo(item.url);
+  })
+
+  const basicInfo = await Promise.all(promises);
+
+  const searchData = [];
+
+  basicInfo.forEach((item, index) => {
+    searchData.push({
+      url: searchResult.currentPage[index].url,
+      thumbnail: searchResult.currentPage[index].thumbnails.medium.url,
+      title: searchResult.currentPage[index].title,
+      channelName: searchResult.currentPage[index].channelTitle,
+      duration: item.videoDetails.lengthSeconds
+    })
   })
 
   const searchResponse = {
@@ -42,7 +52,8 @@ router.get('/search', auth ,async (req, res) => {
 
     if (!pageToken) {
       const searchResult = await searcher.search(searchQuery, {type:'video'});
-      res.status(200).send(generateSearchResponse(searchResult, searchQuery));
+      const generatedResponse = await generateSearchResponse(searchResult, searchQuery);
+      res.status(200).send(generatedResponse);
       return;
     }
 
@@ -50,7 +61,8 @@ router.get('/search', auth ,async (req, res) => {
       type: 'video',
       pageToken
     });
-    res.status(200).send(generateSearchResponse(searchResult, searchQuery));
+    const generatedResponse = await generateSearchResponse(searchResult, searchQuery);
+    res.status(200).send(generatedResponse);
   }
   catch (err) {
     console.log('Error In Search', err);
