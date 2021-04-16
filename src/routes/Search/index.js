@@ -26,7 +26,8 @@ const generateSearchResponse = async (searchResult, searchQuery) => {
       thumbnail: searchResult.currentPage[index].thumbnails.medium.url,
       title: searchResult.currentPage[index].title,
       channelName: searchResult.currentPage[index].channelTitle,
-      duration: item.videoDetails.lengthSeconds
+      duration: item.videoDetails.lengthSeconds,
+      id: searchResult.currentPage[index].id
     })
   })
 
